@@ -3,12 +3,12 @@ kind: Job
 metadata:
   name: secret-cleanup-job
 spec:
+  backoffLimit: 0
   template:
     metadata:
       labels:
         app: secret-cleanup
     spec:
-      backoffLimit: 0
       serviceAccountName: secret-manager-sa 
       containers:
       - name: secret-manager
