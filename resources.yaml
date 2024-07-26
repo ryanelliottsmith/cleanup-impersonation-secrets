@@ -12,9 +12,7 @@ spec:
       serviceAccountName: secret-manager-sa  # ServiceAccount used by the Job
       containers:
       - name: secret-manager
-        # image: your-container-image  # Replace with your container image
-        # command: ["your-command"]
-      image: ghcr.io/ryanelliottsmith/cleanup-impersonation-secrets:latest
+        image: your-image
       restartPolicy: Never
 ---
 apiVersion: v1
