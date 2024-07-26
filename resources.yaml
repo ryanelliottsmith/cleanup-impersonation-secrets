@@ -1,0 +1,46 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: secret-cleanup-job
+spec:
+  template:
+    metadata:
+      labels:
+        app: secret-cleanup
+    spec:
+      backoffLimit: 0
+      serviceAccountName: secret-manager-sa  # ServiceAccount used by the Job
+      containers:
+      - name: secret-manager
+        # image: your-container-image  # Replace with your container image
+        # command: ["your-command"]
+      image: ghcr.io/ryanelliottsmith/cleanup-impersonation-secrets:latest
+      restartPolicy: Never
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: secret-manager-sa
+  namespace: default  # Use the appropriate namespace
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: secret-manager-role
+rules:
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "list", "watch", "create", "update", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: secret-manager-binding
+subjects:
+- kind: ServiceAccount
+  name: secret-manager-sa
+  namespace: default  # Use the appropriate namespace
+roleRef:
+  kind: ClusterRole
+  name: secret-manager-role
+  apiGroup: rbac.authorization.k8s.io
