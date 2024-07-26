@@ -9,17 +9,18 @@ spec:
         app: secret-cleanup
     spec:
       backoffLimit: 0
-      serviceAccountName: secret-manager-sa  # ServiceAccount used by the Job
+      serviceAccountName: secret-manager-sa 
       containers:
       - name: secret-manager
-        image: your-image
+        image: bitnami/kubectl:latest
+        command: ["kubectl", "delete", "secrets", "-n", "cattle-impersonation-system", "--all"]
       restartPolicy: Never
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: secret-manager-sa
-  namespace: default  # Use the appropriate namespace
+  namespace: default
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -37,8 +38,9 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: secret-manager-sa
-  namespace: default  # Use the appropriate namespace
+  namespace: default 
 roleRef:
   kind: ClusterRole
   name: secret-manager-role
   apiGroup: rbac.authorization.k8s.io
+
