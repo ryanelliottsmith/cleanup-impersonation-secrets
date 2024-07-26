@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NAMESPACE="test-ns"
+NAMESPACE="cattle-impersonation-system"
 MAX_RETRIES=10
 RETRY_DELAY=5
 BATCH_SIZE=1000
@@ -11,10 +11,18 @@ export NAMESPACE
 kubectl get secrets -n $NAMESPACE --no-headers -o custom-columns=":metadata.name" > secrets-list.txt
 split -l $BATCH_SIZE secrets-list.txt secret_chunk_
 
+
+
 for _file in secret_chunk_*
   do
-  kubectl delete secret -n $NAMESPACE $(awk '{printf "%s ", $0}' $_file)
+   attempt=0
+   while [ $attempt -lt $MAX_RETRIES ]; do
+    kubectl delete secret -n $NAMESPACE $(awk '{printf "%s ", $0}' $_file) && break
+    attempt=$((attempt + 1))
+    echo "Retrying $attempt/$MAX_RETRIES"
+    sleep $RETRY_DELAY
   done
+done
 
 rm secrets-list.txt
 rm secret_chunk_*
