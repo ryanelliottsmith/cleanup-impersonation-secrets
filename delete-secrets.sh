@@ -8,12 +8,12 @@ BATCH_SIZE=1000
 
 export NAMESPACE
 
-kubectl get secrets -n $NAMESPACE --no-headers -o custom-columns=":metadata.name" > secrets-list.txt
+kubectl --kubeconfig=/tmp/kubeconfig.yml get secrets -n $NAMESPACE --no-headers -o custom-columns=":metadata.name" > secrets-list.txt
 split -l $BATCH_SIZE secrets-list.txt secret_chunk_
 
 for _file in secret_chunk_*
   do
-  kubectl delete secret -n $NAMESPACE $(awk '{printf "%s ", $0}' $_file)
+  kubectl --kubeconfig=/tmp/kubeconfig.yml delete secret -n $NAMESPACE $(awk '{printf "%s ", $0}' $_file)
   done
 
 rm secrets-list.txt
