@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 
-RUN curl -LO "https://dl.k8s.io/release/v1.28.6/bin/linux/amd64/kubectl" \
+RUN curl -LO "https://dl.k8s.io/release/v1.26.15/bin/linux/amd64/kubectl" \
     && chmod +x ./kubectl \
     && mv ./kubectl /usr/local/bin/kubectl
 
